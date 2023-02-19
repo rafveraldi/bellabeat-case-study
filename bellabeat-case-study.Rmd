@@ -1,0 +1,13 @@
+---
+title: "Bellabeat - Case Study"
+subtitle: "Google Data Analytics Capstone"
+author: "Rafael Veraldi"
+date: "`r format(Sys.time(), '%B %Y')`"
+output: html_document
+---
+
+<p align="center">
+![](./img/bellabeat-logo.png){width=10%}
+</p>
+
+## Business Task
