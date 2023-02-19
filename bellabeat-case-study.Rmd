@@ -3,7 +3,7 @@ title: "Bellabeat - Case Study"
 subtitle: "Google Data Analytics Capstone"
 author: "Rafael Veraldi"
 date: "`r format(Sys.time(), '%B %Y')`"
-output: html_document
+output: github_document
 ---
 <center>
 ![](./img/bellabeat-logo.png){width=5%}
