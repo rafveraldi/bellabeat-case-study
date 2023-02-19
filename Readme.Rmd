@@ -5,6 +5,7 @@ author: "Rafael Veraldi"
 date: "`r format(Sys.time(), '%B %Y')`"
 output: github_document
 ---
+
 <center>
 ![](./img/bellabeat-logo.png){width=5%}
 </center>
