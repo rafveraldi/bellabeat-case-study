@@ -11,3 +11,17 @@ output: html_document
 </p>
 
 ## Business Task
+
+**Analyze non-Bellabeat smart device usage data in order to identify trends that will inform the company's marketing strategy.**
+
+Key Stakeholders:
+
+* **Urška Sršen:** Bellabeat’s cofounder and Chief Creative Officer.
+* **Sando Mur:** Mathematician and Bellabeat’s cofounder; Member of the executive team.
+* **Bellabeat marketing analytics team**
+
+The following questions will guide this analysis:
+
+1. What are some trends in smart device usage?
+2. How could these trends apply to Bellabeat customers?
+3. How could these trends help influence Bellabeat marketing strategy?
