@@ -419,6 +419,92 @@ direction. Any decision made from it should be verified by a larger
 analysis from a more reliable dataset.</p>
 </div>
 </div>
+<div id="data-manipulation" class="section level2">
+<h2>Data Manipulation</h2>
+<p>Loading packages</p>
+<pre class="r"><code>library(tidyverse)
+library(lubridate)
+library(dplyr)
+library(ggplot2)
+library(tidyr)
+library(janitor)</code></pre>
+<p>Loading the data set</p>
+<pre class="r"><code>dailyActivity &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/dailyActivity_merged.csv&#39;)
+dailyCalories &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/dailyCalories_merged.csv&#39;)
+dailyIntensities &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/dailyIntensities_merged.csv&#39;)
+dailySteps &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/dailySteps_merged.csv&#39;)
+heartrate_seconds &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/heartrate_seconds_merged.csv&#39;)
+hourlyCalories &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/hourlyCalories_merged.csv&#39;)
+hourlyIntensities &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/hourlyIntensities_merged.csv&#39;)
+hourlySteps &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/hourlySteps_merged.csv&#39;)
+minuteCaloriesNarrow &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/minuteCaloriesNarrow_merged.csv&#39;)
+minuteCaloriesWide &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/minuteCaloriesWide_merged.csv&#39;)
+minuteIntensitiesNarrow &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/minuteIntensitiesNarrow_merged.csv&#39;)
+minuteIntensitiesWide &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/minuteIntensitiesWide_merged.csv&#39;)
+minuteMETsNarrow &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/minuteMETsNarrow_merged.csv&#39;)
+minuteSleep &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/minuteSleep_merged.csv&#39;)
+minuteStepsNarrow &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/minuteStepsNarrow_merged.csv&#39;)
+minuteStepsWide &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/minuteStepsWide_merged.csv&#39;)
+sleepDay &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/sleepDay_merged.csv&#39;)
+weightLogInfo &lt;- read_csv(&#39;./Fitabase Data 4.12.16-5.12.16/weightLogInfo_merged.csv&#39;)</code></pre>
+<p>Verifying if the loading activity was successful by using head
+function</p>
+<pre class="r"><code>head(dailyActivity)</code></pre>
+<pre><code>## # A tibble: 6 × 15
+##       Id Activ…¹ Total…² Total…³ Track…⁴ Logge…⁵ VeryA…⁶ Moder…⁷ Light…⁸ Seden…⁹
+##    &lt;dbl&gt; &lt;chr&gt;     &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;   &lt;dbl&gt;
+## 1 1.50e9 4/12/2…   13162    8.5     8.5        0    1.88   0.550    6.06       0
+## 2 1.50e9 4/13/2…   10735    6.97    6.97       0    1.57   0.690    4.71       0
+## 3 1.50e9 4/14/2…   10460    6.74    6.74       0    2.44   0.400    3.91       0
+## 4 1.50e9 4/15/2…    9762    6.28    6.28       0    2.14   1.26     2.83       0
+## 5 1.50e9 4/16/2…   12669    8.16    8.16       0    2.71   0.410    5.04       0
+## 6 1.50e9 4/17/2…    9705    6.48    6.48       0    3.19   0.780    2.51       0
+## # … with 5 more variables: VeryActiveMinutes &lt;dbl&gt;, FairlyActiveMinutes &lt;dbl&gt;,
+## #   LightlyActiveMinutes &lt;dbl&gt;, SedentaryMinutes &lt;dbl&gt;, Calories &lt;dbl&gt;, and
+## #   abbreviated variable names ¹​ActivityDate, ²​TotalSteps, ³​TotalDistance,
+## #   ⁴​TrackerDistance, ⁵​LoggedActivitiesDistance, ⁶​VeryActiveDistance,
+## #   ⁷​ModeratelyActiveDistance, ⁸​LightActiveDistance, ⁹​SedentaryActiveDistance</code></pre>
+<p>As can be seen, dailyActivity file contains information from many
+other files and it’ll be the main file to be use in this analysis. The
+sleepDay data is not included in the dailyActivity file and it will be
+merged as follows.</p>
+<pre class="r"><code># Date formatting for both files
+dailyActivity$ActivityDate &lt;- mdy(dailyActivity$ActivityDate)
+sleepDay$SleepDay &lt;- mdy_hms(sleepDay$SleepDay)
+
+# Renaming headers to match when merging
+sleepDay &lt;- rename(sleepDay, ActivityDate = SleepDay)
+
+# Merging data
+dailyActivity &lt;- merge(dailyActivity,sleepDay, by=c(&#39;Id&#39;,&#39;ActivityDate&#39;))
+
+# Confirming columns were successfully merged by using glimpse function
+glimpse(dailyActivity)</code></pre>
+<pre><code>## Rows: 413
+## Columns: 18
+## $ Id                       &lt;dbl&gt; 1503960366, 1503960366, 1503960366, 150396036…
+## $ ActivityDate             &lt;date&gt; 2016-04-12, 2016-04-13, 2016-04-15, 2016-04-…
+## $ TotalSteps               &lt;dbl&gt; 13162, 10735, 9762, 12669, 9705, 15506, 10544…
+## $ TotalDistance            &lt;dbl&gt; 8.50, 6.97, 6.28, 8.16, 6.48, 9.88, 6.68, 6.3…
+## $ TrackerDistance          &lt;dbl&gt; 8.50, 6.97, 6.28, 8.16, 6.48, 9.88, 6.68, 6.3…
+## $ LoggedActivitiesDistance &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ VeryActiveDistance       &lt;dbl&gt; 1.88, 1.57, 2.14, 2.71, 3.19, 3.53, 1.96, 1.3…
+## $ ModeratelyActiveDistance &lt;dbl&gt; 0.55, 0.69, 1.26, 0.41, 0.78, 1.32, 0.48, 0.3…
+## $ LightActiveDistance      &lt;dbl&gt; 6.06, 4.71, 2.83, 5.04, 2.51, 5.03, 4.24, 4.6…
+## $ SedentaryActiveDistance  &lt;dbl&gt; 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, …
+## $ VeryActiveMinutes        &lt;dbl&gt; 25, 21, 29, 36, 38, 50, 28, 19, 41, 39, 73, 3…
+## $ FairlyActiveMinutes      &lt;dbl&gt; 13, 19, 34, 10, 20, 31, 12, 8, 21, 5, 14, 23,…
+## $ LightlyActiveMinutes     &lt;dbl&gt; 328, 217, 209, 221, 164, 264, 205, 211, 262, …
+## $ SedentaryMinutes         &lt;dbl&gt; 728, 776, 726, 773, 539, 775, 818, 838, 732, …
+## $ Calories                 &lt;dbl&gt; 1985, 1797, 1745, 1863, 1728, 2035, 1786, 177…
+## $ TotalSleepRecords        &lt;dbl&gt; 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
+## $ TotalMinutesAsleep       &lt;dbl&gt; 327, 384, 412, 340, 700, 304, 360, 325, 361, …
+## $ TotalTimeInBed           &lt;dbl&gt; 346, 407, 442, 367, 712, 320, 377, 364, 384, …</code></pre>
+<p>The data set has been successfully manipulated for my analysis.</p>
+</div>
+<div id="analisys" class="section level2">
+<h2>Analisys</h2>
+</div>
 
 
 
