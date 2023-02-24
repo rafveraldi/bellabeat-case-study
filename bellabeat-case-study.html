@@ -478,10 +478,16 @@ sleepDay &lt;- rename(sleepDay, ActivityDate = SleepDay)
 # Merging data
 dailyActivity &lt;- merge(dailyActivity,sleepDay, by=c(&#39;Id&#39;,&#39;ActivityDate&#39;))
 
+# Adding weekday column
+dailyActivity &lt;- mutate(dailyActivity, Weekday = weekdays(ActivityDate))
+
+# Adding a column for total awake time in bed
+dailyActivity &lt;- mutate(dailyActivity, TotalAwakeTimeInBed = TotalTimeInBed - TotalMinutesAsleep)
+
 # Confirming columns were successfully merged by using glimpse function
 glimpse(dailyActivity)</code></pre>
 <pre><code>## Rows: 413
-## Columns: 18
+## Columns: 20
 ## $ Id                       &lt;dbl&gt; 1503960366, 1503960366, 1503960366, 150396036…
 ## $ ActivityDate             &lt;date&gt; 2016-04-12, 2016-04-13, 2016-04-15, 2016-04-…
 ## $ TotalSteps               &lt;dbl&gt; 13162, 10735, 9762, 12669, 9705, 15506, 10544…
@@ -499,11 +505,45 @@ glimpse(dailyActivity)</code></pre>
 ## $ Calories                 &lt;dbl&gt; 1985, 1797, 1745, 1863, 1728, 2035, 1786, 177…
 ## $ TotalSleepRecords        &lt;dbl&gt; 1, 2, 1, 2, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, …
 ## $ TotalMinutesAsleep       &lt;dbl&gt; 327, 384, 412, 340, 700, 304, 360, 325, 361, …
-## $ TotalTimeInBed           &lt;dbl&gt; 346, 407, 442, 367, 712, 320, 377, 364, 384, …</code></pre>
+## $ TotalTimeInBed           &lt;dbl&gt; 346, 407, 442, 367, 712, 320, 377, 364, 384, …
+## $ Weekday                  &lt;chr&gt; &quot;Tuesday&quot;, &quot;Wednesday&quot;, &quot;Friday&quot;, &quot;Saturday&quot;,…
+## $ TotalAwakeTimeInBed      &lt;dbl&gt; 19, 23, 30, 27, 12, 16, 17, 39, 23, 19, 46, 2…</code></pre>
 <p>The data set has been successfully manipulated for my analysis.</p>
 </div>
-<div id="analisys" class="section level2">
-<h2>Analisys</h2>
+<div id="analysis" class="section level2">
+<h2>Analysis</h2>
+<p>By summarizing a selection of columns in the dailyActivity table we
+can get some first thoughts.</p>
+<pre class="r"><code>dailyActivity %&gt;%
+  select(TotalSteps, Calories, VeryActiveMinutes, FairlyActiveMinutes, LightlyActiveMinutes, SedentaryMinutes, TotalMinutesAsleep, TotalAwakeTimeInBed)%&gt;%
+  summary()</code></pre>
+<pre><code>##    TotalSteps       Calories    VeryActiveMinutes FairlyActiveMinutes
+##  Min.   :   17   Min.   : 257   Min.   :  0.00    Min.   :  0.00     
+##  1st Qu.: 5206   1st Qu.:1850   1st Qu.:  0.00    1st Qu.:  0.00     
+##  Median : 8925   Median :2220   Median :  9.00    Median : 11.00     
+##  Mean   : 8541   Mean   :2398   Mean   : 25.19    Mean   : 18.04     
+##  3rd Qu.:11393   3rd Qu.:2926   3rd Qu.: 38.00    3rd Qu.: 27.00     
+##  Max.   :22770   Max.   :4900   Max.   :210.00    Max.   :143.00     
+##  LightlyActiveMinutes SedentaryMinutes TotalMinutesAsleep TotalAwakeTimeInBed
+##  Min.   :  2.0        Min.   :   0.0   Min.   : 58.0      Min.   :  0.00     
+##  1st Qu.:158.0        1st Qu.: 631.0   1st Qu.:361.0      1st Qu.: 17.00     
+##  Median :208.0        Median : 717.0   Median :433.0      Median : 25.00     
+##  Mean   :216.9        Mean   : 712.2   Mean   :419.5      Mean   : 39.17     
+##  3rd Qu.:263.0        3rd Qu.: 783.0   3rd Qu.:490.0      3rd Qu.: 40.00     
+##  Max.   :518.0        Max.   :1265.0   Max.   :796.0      Max.   :371.00</code></pre>
+<p>Some points taken from this summary to lead the analysis:</p>
+<ul>
+<li>Daily average of 8,541 steps which is below the 10,000 steps
+recommended.</li>
+<li>Average of very active minutes is 2.77 times greater than the
+Median, the distribution is skewed left, meaning the very active minutes
+are concentrated either in some users or some weekdays.</li>
+<li>Average of 419 minutes of sleep or approximately 7 hours, less than
+the recommended 8 hours but still acceptable.</li>
+<li>712 sedentary daily minutes in average or approximately 12 hours, a
+surprising number for fitness tracker users.</li>
+<li>Users spent in average 39 minutes awake in bed.</li>
+</ul>
 </div>
 
 

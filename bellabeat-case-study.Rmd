@@ -95,10 +95,32 @@ sleepDay <- rename(sleepDay, ActivityDate = SleepDay)
 # Merging data
 dailyActivity <- merge(dailyActivity,sleepDay, by=c('Id','ActivityDate'))
 
+# Adding weekday column
+dailyActivity <- mutate(dailyActivity, Weekday = weekdays(ActivityDate))
+
+# Adding a column for total awake time in bed
+dailyActivity <- mutate(dailyActivity, TotalAwakeTimeInBed = TotalTimeInBed - TotalMinutesAsleep)
+
 # Confirming columns were successfully merged by using glimpse function
 glimpse(dailyActivity)
 ```
-
 The data set has been successfully manipulated for my analysis.
 
-## Analisys
+## Analysis
+
+By summarizing a selection of columns in the dailyActivity table we can get some first thoughts.
+```{r summarizing dailyActivity}
+dailyActivity %>%
+  select(TotalSteps, Calories, VeryActiveMinutes, FairlyActiveMinutes, LightlyActiveMinutes, SedentaryMinutes, TotalMinutesAsleep, TotalAwakeTimeInBed)%>%
+  summary()
+
+```
+Some points taken from this summary to lead the analysis:
+
+* Daily average of 8,541 steps which is below the 10,000 steps recommended.
+* Average of very active minutes is 2.77 times greater than the Median, the distribution is skewed left, meaning the very active minutes are concentrated either in some users or some weekdays.
+* Average of 419 minutes of sleep or approximately 7 hours, less than the recommended 8 hours but still acceptable.
+* 712 sedentary daily minutes in average or approximately 12 hours, a surprising number for fitness tracker users.
+* Users spent in average 39 minutes awake in bed.
+
+
