@@ -55,6 +55,8 @@ library(dplyr)
 library(ggplot2)
 library(tidyr)
 library(janitor)
+library(skimr)
+library(gridExtra)
 ```
 
 Loading the data set
@@ -123,4 +125,17 @@ Some points taken from this summary to lead the analysis:
 * 712 sedentary daily minutes in average or approximately 12 hours, a surprising number for fitness tracker users.
 * Users spent in average 39 minutes awake in bed.
 
+```{r Calories and Steps Plot, message=FALSE}
+ggplot(data = dailyActivity, mapping = aes(x = TotalSteps, y = Calories)) + geom_jitter() + geom_smooth(method = lm) + theme_bw() + labs(title = "Relation between Daily Calories and Daily Steps", x = "Total Steps") +theme(plot.title = element_text(hjust = 0.5))
+```
 
+By plotting the relation between Daily Calories and Daily Steps when each point is an entry from a user, it is clear that there is a positive correlation between both variables, meaning the more active you are, more calories are spent.
+```{r Calories by level of activity - Grid, message=FALSE}
+plot1 <- ggplot(data = dailyActivity, mapping = aes(x = VeryActiveMinutes, y = Calories)) + geom_jitter() + geom_smooth(method = lm) + theme_bw() + labs(x = "Very Active Minutes", y = "")
+plot2 <- ggplot(data = dailyActivity, mapping = aes(x = FairlyActiveMinutes, y = Calories)) + geom_jitter() + geom_smooth(method = lm) + theme_bw() + labs(x = "Faily Active Minutes", y = "")
+plot3 <- ggplot(data = dailyActivity, mapping = aes(x = LightlyActiveMinutes, y = Calories)) + geom_jitter() + geom_smooth(method = lm) + theme_bw() + labs(x = "Lightly Active Minutes", y =  "")
+plot4 <- ggplot(data = dailyActivity, mapping = aes(x = SedentaryMinutes, y = Calories)) + geom_jitter() + geom_smooth(method = lm) + theme_bw() + labs(x = "Sedentary Minutes", y = "")
+grid.arrange(plot1, plot2, plot3, plot4, ncol=2, top = "Relation between Calories spent and Activity levels in the day")
+```
+
+When it comes to the relation between calories spent during the day and the level of activity, having very active minutes in a day may contribute directly to spending more calories, even in smaller amounts. Whereas light activity or sedentary minutes have almost no correlation with calorie expenditure.
