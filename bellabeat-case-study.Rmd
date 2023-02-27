@@ -13,17 +13,14 @@ output: html_document
 
 **Analyze non-Bellabeat smart device usage data in order to identify trends that will inform the company's marketing strategy.**
 
-Key Stakeholders:
+**Primary Stakeholders:**  
 
-* **Urška Sršen:** Bellabeat’s cofounder and Chief Creative Officer.
-* **Sando Mur:** Mathematician and Bellabeat’s cofounder; Member of the executive team.
-* **Bellabeat marketing analytics team**
+* Urška Sršen: Bellabeat’s cofounder and Chief Creative Officer.  
+* Sando Mur: Mathematician and Bellabeat’s cofounder; Member of the executive team.  
 
-The following questions will guide this analysis:
+**Secondary Stakeholders:**  
 
-1. What are some trends in smart device usage?
-2. How could these trends apply to Bellabeat customers?
-3. How could these trends help influence Bellabeat marketing strategy?
+* Bellabeat marketing analytics team
 
 ## Data Source
 
@@ -98,7 +95,7 @@ sleepDay <- rename(sleepDay, ActivityDate = SleepDay)
 dailyActivity <- merge(dailyActivity,sleepDay, by=c('Id','ActivityDate'))
 
 # Adding weekday column
-dailyActivity <- mutate(dailyActivity, Weekday = weekdays(ActivityDate))
+dailyActivity <- mutate(dailyActivity, Weekday = weekdays(ActivityDate, abbreviate = TRUE))
 
 # Adding a column for total awake time in bed
 dailyActivity <- mutate(dailyActivity, TotalAwakeTimeInBed = TotalTimeInBed - TotalMinutesAsleep)
@@ -108,7 +105,7 @@ glimpse(dailyActivity)
 ```
 The data set has been successfully manipulated for my analysis.
 
-## Analysis
+## Analysis and Visualization 
 
 By summarizing a selection of columns in the dailyActivity table we can get some first thoughts.
 ```{r summarizing dailyActivity}
@@ -125,17 +122,49 @@ Some points taken from this summary to lead the analysis:
 * 712 sedentary daily minutes in average or approximately 12 hours, a surprising number for fitness tracker users.
 * Users spent in average 39 minutes awake in bed.
 
+---
 ```{r Calories and Steps Plot, message=FALSE}
 ggplot(data = dailyActivity, mapping = aes(x = TotalSteps, y = Calories)) + geom_jitter() + geom_smooth(method = lm) + theme_bw() + labs(title = "Relation between Daily Calories and Daily Steps", x = "Total Steps") +theme(plot.title = element_text(hjust = 0.5))
 ```
 
-By plotting the relation between Daily Calories and Daily Steps when each point is an entry from a user, it is clear that there is a positive correlation between both variables, meaning the more active you are, more calories are spent.
+By plotting the relation between Daily Calories and Daily Steps when each point is an entry from a user, it is clear that there is a positive correlation between both variables, meaning the more active you are, more calories are spent.  
+
+---
 ```{r Calories by level of activity - Grid, message=FALSE}
 plot1 <- ggplot(data = dailyActivity, mapping = aes(x = VeryActiveMinutes, y = Calories)) + geom_jitter() + geom_smooth(method = lm) + theme_bw() + labs(x = "Very Active Minutes", y = "")
+
 plot2 <- ggplot(data = dailyActivity, mapping = aes(x = FairlyActiveMinutes, y = Calories)) + geom_jitter() + geom_smooth(method = lm) + theme_bw() + labs(x = "Faily Active Minutes", y = "")
+
 plot3 <- ggplot(data = dailyActivity, mapping = aes(x = LightlyActiveMinutes, y = Calories)) + geom_jitter() + geom_smooth(method = lm) + theme_bw() + labs(x = "Lightly Active Minutes", y =  "")
+
 plot4 <- ggplot(data = dailyActivity, mapping = aes(x = SedentaryMinutes, y = Calories)) + geom_jitter() + geom_smooth(method = lm) + theme_bw() + labs(x = "Sedentary Minutes", y = "")
+
 grid.arrange(plot1, plot2, plot3, plot4, ncol=2, top = "Relation between Calories spent and Activity levels in the day")
 ```
 
 When it comes to the relation between calories spent during the day and the level of activity, having very active minutes in a day may contribute directly to spending more calories, even in smaller amounts. Whereas light activity or sedentary minutes have almost no correlation with calorie expenditure.
+
+---
+```{r Weekly distribution - Grid, message=FALSE }
+plot5 <- ggplot(dailyActivity, aes(x= factor(Weekday, levels = c("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")), y = Calories)) + stat_summary(geom = "col", fun = "mean") + theme_bw() + labs(x = "")
+
+plot6 <- ggplot(dailyActivity, aes(x= factor(Weekday, levels = c("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")), y = TotalAwakeTimeInBed)) + stat_summary(geom = "col", fun = "mean") + theme_bw() + labs(x = "", y = "Awake minutes in bed")
+plot7 <- ggplot(dailyActivity, aes(x= factor(Weekday, levels = c("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")), y = VeryActiveMinutes)) + stat_summary(geom = "col", fun = "mean") + theme_bw() + labs(x = "", y = "Very active minutes")
+plot8 <- ggplot(dailyActivity, aes(x= factor(Weekday, levels = c("Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat")), y = SedentaryMinutes)) + stat_summary(geom = "col", fun = "mean") + theme_bw() + labs(x = "", y = "Sedentary minutes")
+
+grid.arrange(plot5, plot6, plot7, plot8, ncol=2, top = "Weekly distribution of key measurements (Average)")
+```
+
+The weekly view confirms that a few general assumptions from the human behavior and physiology. For example:
+
+* Calorie expenditure has small variation from day to day, meaning no short term measure will make people spend more energy.
+* Sedentary minutes have the same profile as Calorie expenditure. Focusing on creating long-lasting non-sedentary habits is ideal.
+* Very active minutes peak in the beginning of the week. Consistency is key, most people can't keep a consistent workout schedule.
+* Sunday is the international stay-in-bed day. Joke aside, staying a few more minutes in bed does not affect your results. Having balance can help you not burn out, stay longer in your plan, and achieve your results. 
+
+## Conclusion
+
+There is a clear relation between having very active minutes in a day and calories burned, but not in the short term. Mondays and Tuesdays are the days with most very active minutes whereas Sunday, the day before, is the day that people like to spend more time in bed. It illustrates a lack of consistency in terms of activity during the week and a possible mindset of guilt and compensation.
+
+Based on those insights, I would suggest that the marketing team should focus on sharing a message that the Bellabeat products promote the creation of long-lasting healthy habits that help its customers to have a more active and balanced life.  
+
